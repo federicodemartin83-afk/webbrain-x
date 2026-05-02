@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#07111f">
+<title>WebBrain X Memory Engine</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="description" content="Assistente di conoscenza personale con siti, libri, percorsi, relazioni, AI, clustering e dashboard.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="WebBrain X">
+<link rel="icon" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<style>
+:root{--bg:#07111f;--panel:#0f1d32;--panel2:#091629;--line:rgba(148,163,184,.2);--text:#f3f7fb;--muted:#8ba2bd;--accent:#22d3ee;--purple:#a78bfa;--green:#34d399;--yellow:#facc15;--red:#fb7185;--orange:#fb923c;--r:24px;--shadow:0 18px 60px rgba(0,0,0,.38)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:radial-gradient(circle at 10% 10%,rgba(34,211,238,.18),transparent 30%),radial-gradient(circle at 90% 10%,rgba(167,139,250,.16),transparent 28%),radial-gradient(circle at 50% 100%,rgba(52,211,153,.1),transparent 30%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,textarea,select{font:inherit}button{border:0;cursor:pointer}a{color:inherit}
+.app{max-width:1500px;margin:auto;padding:18px 18px 96px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px;padding-top:env(safe-area-inset-top)}
+.brand{display:flex;align-items:center;gap:14px}.logo{width:62px;height:62px;border-radius:22px;display:grid;place-items:center;font-size:31px;background:linear-gradient(135deg,rgba(34,211,238,.18),rgba(167,139,250,.18));border:1px solid rgba(34,211,238,.25)}
+h1{margin:0;font-size:clamp(29px,6vw,54px);letter-spacing:-1.5px;line-height:.95}.sub{margin:6px 0 0;color:var(--muted);font-size:14px}
+.top-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.btn{background:linear-gradient(135deg,var(--accent),#38bdf8);color:#04131f;border-radius:16px;padding:12px 15px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.secondary{background:rgba(255,255,255,.08);color:var(--text);border:1px solid var(--line)}.btn.danger{background:rgba(251,113,133,.16);color:#fecdd3;border:1px solid rgba(251,113,133,.3)}.btn.small{padding:9px 11px;font-size:13px;border-radius:13px}.btn.green{background:linear-gradient(135deg,var(--green),#86efac)}
+.card{background:rgba(15,29,50,.78);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);backdrop-filter:blur(16px);overflow:hidden}.card-inner{padding:17px}.card h2{margin:0 0 14px;font-size:20px;display:flex;gap:8px;align-items:center}
+.grid{display:grid;grid-template-columns:390px 1fr;gap:18px}.stack{display:grid;gap:12px}.main-grid{display:grid;grid-template-columns:1fr 390px;gap:18px}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+input,textarea,select{width:100%;background:rgba(7,17,31,.78);border:1px solid var(--line);border-radius:16px;color:var(--text);padding:13px 14px;outline:none}textarea{min-height:82px;resize:vertical}input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+.hint,.muted{color:var(--muted);font-size:13px;line-height:1.45}.hint{background:rgba(7,17,31,.55);border:1px solid var(--line);border-radius:16px;padding:12px}.warn{border-color:rgba(250,204,21,.3);background:rgba(250,204,21,.08);color:#fef3c7}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:18px}.kpi{background:rgba(7,17,31,.62);border:1px solid var(--line);border-radius:20px;padding:15px}.kpi span{font-size:12px;color:var(--muted);font-weight:800;text-transform:uppercase}.kpi strong{display:block;font-size:25px;margin-top:3px}
+.tabs{display:flex;gap:8px;overflow:auto;padding:4px;margin-bottom:14px}.tab{white-space:nowrap;background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:10px 13px;font-weight:850}.tab.active{background:rgba(34,211,238,.14);color:#cffafe}
+.panel{display:none}.panel.active{display:block}.searchbar{display:grid;grid-template-columns:1fr auto auto;gap:10px;margin-bottom:13px}
+.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.box,.site,.book,.path-card,.result{background:rgba(7,17,31,.68);border:1px solid var(--line);border-radius:20px;padding:14px}.site h3,.box h3,.book h3,.path-card h3,.result h3{margin:0 0 7px;font-size:16px}.url{color:#67e8f9;font-size:12px;word-break:break-all}
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.tag{background:rgba(34,211,238,.10);border:1px solid rgba(34,211,238,.18);color:#cffafe;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:750}.tag.purple{background:rgba(167,139,250,.13);border-color:rgba(167,139,250,.23);color:#ddd6fe}.tag.green{background:rgba(52,211,153,.10);border-color:rgba(52,211,153,.18);color:#bbf7d0}.tag.orange{background:rgba(251,146,60,.12);border-color:rgba(251,146,60,.22);color:#fed7aa}
+.list{display:grid;gap:11px;max-height:640px;overflow:auto;padding-right:4px}.head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.graph-wrap,.mind-wrap{height:560px;position:relative;background:rgba(7,17,31,.70);border:1px solid var(--line);border-radius:22px;overflow:hidden;touch-action:none}#graphSvg,#mindSvg{position:absolute;inset:0;width:100%;height:100%}
+.node{position:absolute;transform:translate(-50%,-50%);width:148px;min-height:78px;background:rgba(15,29,50,.96);border:1px solid rgba(34,211,238,.28);border-radius:18px;padding:10px;box-shadow:0 12px 32px rgba(0,0,0,.28);user-select:none;cursor:grab}.node.active{border-color:var(--yellow)}.node.book-node{border-color:rgba(251,146,60,.45)}.node strong{display:block;font-size:12px;line-height:1.2;max-height:30px;overflow:hidden}.node span{display:block;color:var(--muted);font-size:11px;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mind-center,.mind-child{position:absolute;transform:translate(-50%,-50%);z-index:2;border-radius:20px;padding:13px;text-align:center;box-shadow:0 12px 32px rgba(0,0,0,.28)}.mind-center{left:50%;top:50%;width:190px;background:linear-gradient(135deg,rgba(34,211,238,.18),rgba(167,139,250,.18));border:1px solid rgba(34,211,238,.3)}.mind-child{width:150px;background:rgba(15,29,50,.96);border:1px solid rgba(167,139,250,.28)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.68);backdrop-filter:blur(8px);z-index:100;display:none;align-items:flex-end;justify-content:center}.modal.active{display:flex}.sheet{width:100%;max-width:680px;max-height:88vh;overflow:auto;background:linear-gradient(180deg,#0f1d32,#07111f);border:1px solid var(--line);border-radius:30px 30px 0 0;padding:20px;box-shadow:var(--shadow)}
+.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-120px);z-index:120;background:rgba(15,29,50,.98);border:1px solid var(--line);box-shadow:var(--shadow);padding:13px 18px;border-radius:16px;transition:.35s;font-weight:800}.toast.show{transform:translateX(-50%) translateY(0)}
+.nav{position:fixed;bottom:0;left:0;right:0;z-index:50;display:none;background:rgba(5,10,20,.88);backdrop-filter:blur(26px);border-top:1px solid rgba(255,255,255,.08);padding-bottom:env(safe-area-inset-bottom)}.nav button{flex:1;background:transparent;color:#64748b;padding:10px 4px 12px;display:grid;gap:3px;place-items:center;font-size:10px;font-weight:800}.nav button.active{color:var(--accent)}.nav b{font-size:18px}
+.empty{text-align:center;color:var(--muted);padding:38px 12px}.bar{height:7px;background:rgba(148,163,184,.18);border-radius:999px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple))}
+.timeline{display:grid;gap:10px}.step{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start}.step-num{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.2);font-weight:900}
+.statbars{display:grid;gap:10px}.pillrow{display:flex;gap:8px;flex-wrap:wrap}.mini-chart{height:170px;display:flex;align-items:end;gap:8px;padding:10px;background:rgba(7,17,31,.55);border:1px solid var(--line);border-radius:18px}.barcol{flex:1;min-width:12px;background:linear-gradient(180deg,var(--accent),var(--purple));border-radius:8px 8px 2px 2px;position:relative}.barcol span{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted);margin-bottom:4px}
+@media(max-width:1200px){.grid,.main-grid,.two{grid-template-columns:1fr}.result-grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:720px){.app{padding:14px 12px 92px}.top{flex-direction:column;align-items:flex-start}.top-actions{width:100%}.top-actions .btn{flex:1}.side{display:none}.nav{display:flex}.searchbar{grid-template-columns:1fr}.graph-wrap,.mind-wrap{height:530px}.node{width:120px;min-height:68px;padding:8px}.mind-center{width:142px}.mind-child{width:124px;font-size:12px}.card-inner{padding:15px}.kpis{grid-template-columns:repeat(2,1fr)}.kpi strong{font-size:22px}}
+</style>
+</head>
+<body>
+<div class="toast" id="toast">OK</div>
+<div class="app">
+<header class="top">
+  <div class="brand"><div class="logo">🧠</div><div><h1>WebBrain X</h1><p class="sub">Memory Engine: siti, libri, relazioni, percorsi, AI, cluster e dashboard.</p></div></div>
+  <div class="top-actions">
+    <button class="btn secondary" id="installBtn" style="display:none">📲 Installa</button>
+    <button class="btn secondary" id="exportBtn">⬇️ Backup</button>
+    <button class="btn" id="newSiteBtn">＋ Sito</button>
+    <button class="btn green" id="newBookBtn">＋ Libro</button>
+  </div>
+</header>
+
+<section class="kpis">
+  <div class="kpi"><span>Siti</span><strong id="kpiSites">0</strong></div>
+  <div class="kpi"><span>Libri</span><strong id="kpiBooks">0</strong></div>
+  <div class="kpi"><span>Relazioni</span><strong id="kpiRelations">0</strong></div>
+  <div class="kpi"><span>Percorsi</span><strong id="kpiPaths">0</strong></div>
+  <div class="kpi"><span>Cluster</span><strong id="kpiClusters">0</strong></div>
+  <div class="kpi"><span>Ore studio</span><strong id="kpiHours">0</strong></div>
+</section>
+
+<div class="grid">
+<aside class="side stack">
+  <section class="card"><div class="card-inner"><h2>🧠 Memoria intelligente</h2><div class="stack">
+    <input id="sideUrl" placeholder="URL sito">
+    <input id="sideTitle" placeholder="Titolo opzionale">
+    <textarea id="sideWhy" placeholder="Perché lo salvo? Obbligatorio"></textarea>
+    <textarea id="sideContains" placeholder="Cosa contiene? Riassunto breve"></textarea>
+    <input id="sideTags" placeholder="Tag manuali">
+    <button class="btn" id="sideSaveSite">Salva sito</button>
+    <div class="hint warn">Il campo “Perché lo salvo?” è obbligatorio: WebBrain deve costruire memoria vera, non solo accumulare link.</div>
+  </div></div></section>
+  <section class="card"><div class="card-inner"><h2>🏷️ Cluster</h2><select id="clusterFilter"></select><div id="tagCloud" class="tags"></div></div></section>
+  <section class="card"><div class="card-inner"><h2>⚙️ Dati</h2><div class="stack"><button class="btn secondary" id="importBtn">Importa JSON</button><input id="importFile" type="file" accept="application/json" style="display:none"><button class="btn danger" id="clearBtn">Svuota tutto</button></div></div></section>
+</aside>
+
+<main class="stack">
+  <div class="tabs">
+    <button class="tab active" data-tab="dashboard">Dashboard</button>
+    <button class="tab" data-tab="sites">Siti</button>
+    <button class="tab" data-tab="books">Libri</button>
+    <button class="tab" data-tab="relations">Relazioni</button>
+    <button class="tab" data-tab="paths">Percorsi</button>
+    <button class="tab" data-tab="graph">Grafo</button>
+    <button class="tab" data-tab="ai">AI</button>
+    <button class="tab" data-tab="mindmap">Mappe</button>
+    <button class="tab" data-tab="extension">Estensione</button>
+  </div>
+
+  <section class="panel active" id="panel-dashboard"><div class="main-grid">
+    <div class="stack">
+      <div class="card"><div class="card-inner"><h2>🧠 Dashboard personale</h2><div id="dashboard"></div></div></div>
+      <div class="card"><div class="card-inner"><h2>📈 Evoluzione conoscenza</h2><div id="evolutionChart" class="mini-chart"></div></div></div>
+    </div>
+    <div class="stack">
+      <div class="card"><div class="card-inner"><h2>💡 Suggerimenti automatici</h2><div id="suggestions"></div></div></div>
+      <div class="card"><div class="card-inner"><h2>🧩 Cluster reali locali</h2><div id="clusters"></div></div></div>
+    </div>
+  </div></section>
+
+  <section class="panel" id="panel-sites"><div class="card"><div class="card-inner"><h2>🌐 Siti salvati</h2><div class="searchbar"><input id="siteSearch" placeholder="Cerca sito, tag, perché, contenuto..."><select id="sortMode"><option value="recent">Più recenti</option><option value="score">Più connessi</option><option value="title">Titolo A-Z</option></select><button class="btn secondary" id="siteQuickBtn">＋</button></div><div id="sitesList" class="list"></div></div></div></section>
+
+  <section class="panel" id="panel-books"><div class="main-grid">
+    <div class="card"><div class="card-inner"><h2>📚 Libri letti / in lettura</h2><div class="searchbar"><input id="bookSearch" placeholder="Cerca libro, autore, tag..."><select id="bookStatusFilter"><option value="all">Tutti</option><option value="letto">Letto</option><option value="in lettura">In lettura</option><option value="da leggere">Da leggere</option></select><button class="btn secondary" id="bookQuickBtn">＋</button></div><div id="booksList" class="list"></div></div></div>
+    <div class="card"><div class="card-inner"><h2>📖 Libri suggeriti</h2><div id="bookSuggestions"></div></div></div>
+  </div></section>
+
+  <section class="panel" id="panel-relations"><div class="main-grid">
+    <div class="card"><div class="card-inner"><h2>🔗 Relazioni manuali</h2><div class="stack"><select id="relFrom"></select><select id="relTo"></select><input id="relLabel" placeholder="Tipo relazione: teoria, tutorial, esempio, approfondimento..."><textarea id="relWhy" placeholder="Perché sono collegati?"></textarea><button class="btn" id="addRelationBtn">Collega elementi</button></div></div></div>
+    <div class="card"><div class="card-inner"><h2>🧬 Relazioni esistenti</h2><div id="relationsList" class="list"></div></div></div>
+  </div></section>
+
+  <section class="panel" id="panel-paths"><div class="main-grid">
+    <div class="card"><div class="card-inner"><h2>🧭 Percorsi di apprendimento</h2><div class="stack"><input id="pathTitle" placeholder="Titolo percorso, es. Imparare AI da zero"><textarea id="pathGoal" placeholder="Obiettivo del percorso"></textarea><select id="pathItemSelect"></select><button class="btn secondary" id="addPathStepBtn">Aggiungi step selezionato</button><div id="draftSteps" class="timeline"></div><button class="btn" id="savePathBtn">Salva percorso</button></div></div></div>
+    <div class="card"><div class="card-inner"><h2>📍 Percorsi salvati</h2><div id="pathsList" class="list"></div></div></div>
+  </div></section>
+
+  <section class="panel" id="panel-graph"><div class="card"><div class="card-inner"><h2>🕸️ Grafo siti + libri + relazioni</h2><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn small secondary" id="circleBtn">Cerchio</button><button class="btn small secondary" id="clusterBtn">Cluster</button><button class="btn small secondary" id="randomBtn">Riorganizza</button><span class="hint" style="padding:8px 10px">Le linee spesse sono relazioni manuali; le altre sono similarità.</span></div><div class="graph-wrap" id="graphWrap"><svg id="graphSvg"></svg><div id="graphNodes"></div></div></div></div></section>
+
+  <section class="panel" id="panel-ai"><div class="main-grid">
+    <div class="card"><div class="card-inner"><h2>🤖 AI vera con OpenAI API</h2><div class="hint warn" style="margin-bottom:12px">Serve variabile Netlify <b>OPENAI_API_KEY</b>. La chiave resta lato server nella Function.</div><div class="stack"><select id="aiTarget"></select><button class="btn" id="aiSummarizeBtn">Riassumi / Suggerisci collegamenti</button><button class="btn secondary" id="aiClusterBtn">Rigenera cluster AI</button><div id="aiOutput"></div></div></div></div>
+    <div class="card"><div class="card-inner"><h2>🧬 Clustering TF‑IDF locale</h2><div id="tfidfOutput"></div></div></div>
+  </div></section>
+
+  <section class="panel" id="panel-mindmap"><div class="card"><div class="card-inner"><h2>🧭 Mappe mentali automatiche</h2><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><select id="mindRoot"></select><button class="btn small secondary" id="mindBtn">Rigenera</button></div><div class="mind-wrap" id="mindWrap"><svg id="mindSvg"></svg><div id="mindNodes"></div></div></div></div></section>
+
+  <section class="panel" id="panel-extension"><div class="card"><div class="card-inner"><h2>⚡ Estensione Chrome — Tracking reale</h2><div class="hint">Nel pacchetto ZIP trovi la cartella <b>chrome-extension</b>. È una base Manifest V3 per salvare URL visitati e tempo pagina in locale. Per collegarla alla PWA servirà configurare endpoint o import JSON.</div><div id="extensionInfo"></div></div></div></section>
+</main>
+</div>
+</div>
+
+<nav class="nav">
+  <button class="active" data-tab="dashboard"><b>⌂</b>Home</button>
+  <button data-tab="sites"><b>🌐</b>Siti</button>
+  <button data-tab="books"><b>📚</b>Libri</button>
+  <button data-tab="paths"><b>🧭</b>Percorsi</button>
+  <button data-tab="ai"><b>✦</b>AI</button>
+</nav>
+
+<div class="modal" id="siteModal"><div class="sheet"><h2>＋ Nuovo sito</h2><div class="stack">
+  <input id="mSiteUrl" placeholder="URL sito">
+  <input id="mSiteTitle" placeholder="Titolo opzionale">
+  <textarea id="mSiteWhy" placeholder="Perché lo salvo? Obbligatorio"></textarea>
+  <textarea id="mSiteContains" placeholder="Cosa contiene? Riassunto breve"></textarea>
+  <input id="mSiteTags" placeholder="Tag manuali">
+  <button class="btn" id="mSiteSave">Salva sito</button><button class="btn secondary" data-close="siteModal">Chiudi</button>
+</div></div></div>
+
+<div class="modal" id="bookModal"><div class="sheet"><h2>＋ Nuovo libro</h2><div class="stack">
+  <input id="mBookTitle" placeholder="Titolo libro">
+  <input id="mBookAuthor" placeholder="Autore">
+  <select id="mBookStatus"><option>letto</option><option>in lettura</option><option>da leggere</option></select>
+  <textarea id="mBookWhy" placeholder="Perché mi interessa?"></textarea>
+  <textarea id="mBookContains" placeholder="Cosa contiene / concetti chiave"></textarea>
+  <input id="mBookTags" placeholder="Tag">
+  <button class="btn green" id="mBookSave">Salva libro</button><button class="btn secondary" data-close="bookModal">Chiudi</button>
+</div></div></div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const STORAGE_KEY="webbrainx_memory_engine_v1";
+const STOP=new Set("https http www com it org net io ai app the and for with from into sulla sulle della dello degli delle del che come una uno per con senza sito siti page home login about blog news article guide guida tools tool official search google libro libri autore letto lettura".split(" "));
+const THEMES={ai:["ai","artificial","intelligence","machine","learning","gpt","llm","neural","prompt","chatbot","automation","automazione"],business:["business","marketing","sales","startup","azienda","management","leadership","produttivita","productivity","kpi","dashboard"],tech:["code","developer","api","javascript","python","github","software","database","cloud","web","pwa","chrome","windows"],knowledge:["knowledge","graph","wiki","notes","obsidian","notion","research","studio","learn","learning","course","corso"],finance:["money","finance","budget","crypto","investing","spese","economia","market"],design:["design","ui","ux","figma","creative","grafica","font","style"],science:["science","physics","energy","engineering","meccanica","elettronica","research"],media:["video","youtube","music","photo","image","social","tiktok","instagram"]};
+const seed={sites:[{id:"s1",type:"site",url:"https://obsidian.md/",title:"Obsidian - Connected Notes",why:"Costruire un secondo cervello con note collegate.",contains:"App di note con grafo locale e markdown.",tags:["obsidian","notes","knowledge","graph","productivity"],visits:5,studyMinutes:60,createdAt:"2026-05-02",updatedAt:"2026-05-02"},{id:"s2",type:"site",url:"https://neo4j.com/graph-database/",title:"Neo4j Graph Database",why:"Capire come funzionano i database a grafo.",contains:"Database per relazioni tra dati e query su grafi.",tags:["neo4j","graph","database","knowledge","tech"],visits:3,studyMinutes:45,createdAt:"2026-05-02",updatedAt:"2026-05-02"}],books:[{id:"b1",type:"book",title:"How to Take Smart Notes",author:"Sönke Ahrens",status:"da leggere",why:"Migliorare il metodo di studio e collegamento idee.",contains:"Zettelkasten, note permanenti, apprendimento profondo.",tags:["notes","knowledge","learning","productivity"],studyMinutes:0,createdAt:"2026-05-02",updatedAt:"2026-05-02"}],relations:[],paths:[]};
+let db=load(),selectedId=null,graphMode="circle",positions={},dragged=null,dragOffset={x:0,y:0},draftSteps=[],deferredPrompt=null;
+function load(){try{const s=localStorage.getItem(STORAGE_KEY);return s?JSON.parse(s):seed}catch(e){return seed}}
+function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(db))}
+function uid(p){return p+Date.now()+Math.floor(Math.random()*9999)}
+function today(){return new Date().toISOString().slice(0,10)}
+function esc(t){return String(t??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2300);if(navigator.vibrate)navigator.vibrate(18)}
+function domainOf(url){try{return new URL(String(url).startsWith("http")?url:"https://"+url).hostname.replace(/^www\./,"")}catch(e){return String(url).replace(/^https?:\/\//,"").replace(/^www\./,"").split("/")[0]}}
+function validUrl(url){return String(url||"").startsWith("http")?url:"https://"+url}
+function tokens(text){return String(text||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").split(" ").filter(x=>x.length>2&&!STOP.has(x))}
+function allItems(){return[...db.sites,...db.books]}
+function itemById(id){return allItems().find(x=>x.id===id)}
+function textOf(item){return [item.title,item.author,item.url,item.why,item.contains,(item.tags||[]).join(" ")].join(" ")}
+function autoTags(item,manual=""){const raw=[...tokens(textOf(item)),...tokens(manual)];if(item.url)raw.push(domainOf(item.url).split(".")[0]);const themes=[];Object.entries(THEMES).forEach(([k,words])=>{if(raw.some(t=>words.includes(t)))themes.push(k)});return[...new Set([...themes,...raw])].slice(0,14)}
+function classify(item){const score={};Object.keys(THEMES).forEach(k=>score[k]=0);[...(item.tags||[]),...tokens(textOf(item))].forEach(t=>Object.entries(THEMES).forEach(([k,words])=>{if(words.includes(t)||k===t)score[k]+=2;if((item.tags||[]).includes(k))score[k]+=3}));const best=Object.entries(score).sort((a,b)=>b[1]-a[1])[0];return best&&best[1]>0?best[0]:((item.tags||[])[0]||"general")}
+function commonTags(a,b){return(a.tags||[]).filter(t=>(b.tags||[]).includes(t))}
+function similarity(a,b){const A=new Set(tokens(textOf(a))),B=new Set(tokens(textOf(b)));const inter=[...A].filter(x=>B.has(x)).length;const union=new Set([...A,...B]).size||1;return inter/union}
+function edges(){const items=allItems(),out=[];for(let i=0;i<items.length;i++){for(let j=i+1;j<items.length;j++){const c=commonTags(items[i],items[j]);const sim=similarity(items[i],items[j]);if(c.length||sim>.08)out.push({a:items[i],b:items[j],kind:"auto",weight:c.length+Math.round(sim*8),label:c.slice(0,3).join(", ")||"similarità"})}}db.relations.forEach(r=>{const a=itemById(r.from),b=itemById(r.to);if(a&&b)out.push({a,b,kind:"manual",weight:6,label:r.label||"relazione"})});return out}
+function connectionScore(item){return edges().filter(e=>e.a.id===item.id||e.b.id===item.id).reduce((s,e)=>s+e.weight,0)}
+function addSite(url,title,why,contains,tags){url=String(url||"").trim();why=String(why||"").trim();if(!url){toast("Inserisci URL");return false}if(!why){toast("Campo obbligatorio: Perché lo salvo?");return false}const finalUrl=validUrl(url),existing=db.sites.find(s=>s.url===finalUrl);if(existing){existing.why=why;existing.contains=String(contains||"").trim();existing.updatedAt=today();existing.visits=(existing.visits||0)+1;existing.tags=[...new Set([...(existing.tags||[]),...autoTags({...existing,why,contains},tags)])].slice(0,16);toast("Sito aggiornato")}else{const item={id:uid("s"),type:"site",url:finalUrl,title:String(title||"").trim()||domainOf(finalUrl),why,contains:String(contains||"").trim(),tags:[],visits:1,studyMinutes:0,createdAt:today(),updatedAt:today()};item.tags=autoTags(item,tags);db.sites.unshift(item);toast("Sito salvato")}save();renderAll();return true}
+function addBook(title,author,status,why,contains,tags){title=String(title||"").trim();why=String(why||"").trim();if(!title){toast("Inserisci titolo libro");return false}if(!why){toast("Campo obbligatorio: perché mi interessa?");return false}const item={id:uid("b"),type:"book",title,author:String(author||"").trim(),status:status||"da leggere",why,contains:String(contains||"").trim(),tags:[],studyMinutes:0,createdAt:today(),updatedAt:today()};item.tags=autoTags(item,tags);db.books.unshift(item);save();renderAll();toast("Libro salvato");return true}
+function showTab(tab){document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));$("panel-"+tab).classList.add("active");document.querySelectorAll(".tab,.nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));if(tab==="graph")setTimeout(renderGraph,50);if(tab==="mindmap")setTimeout(renderMindMap,50);if(tab==="ai")renderAI();window.scrollTo(0,0)}
+function renderKPIs(){$("kpiSites").textContent=db.sites.length;$("kpiBooks").textContent=db.books.length;$("kpiRelations").textContent=db.relations.length;$("kpiPaths").textContent=db.paths.length;$("kpiClusters").textContent=new Set(allItems().map(classify)).size;$("kpiHours").textContent=Math.round(allItems().reduce((s,x)=>s+(x.studyMinutes||0),0)/60)}
+function renderFilters(){const clusters=[...new Set(allItems().map(classify))].sort(),cur=$("clusterFilter").value||"all";$("clusterFilter").innerHTML='<option value="all">Tutti i cluster</option>'+clusters.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");$("clusterFilter").value=clusters.includes(cur)?cur:"all";const m={};allItems().forEach(s=>(s.tags||[]).forEach(t=>m[t]=(m[t]||0)+1));$("tagCloud").innerHTML=Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,28).map(([t,n])=>`<span class="tag">#${esc(t)} · ${n}</span>`).join("")}
+function renderDashboard(){const groups={};allItems().forEach(x=>(groups[classify(x)] ||= []).push(x));$("dashboard").innerHTML=`<div class="two"><div class="box"><h3>Cosa stai studiando di più</h3><div class="pillrow">${Object.entries(groups).sort((a,b)=>b[1].length-a[1].length).slice(0,8).map(([k,v])=>`<span class="tag purple">${esc(k)} · ${v.length}</span>`).join("")}</div></div><div class="box"><h3>Dove spendi tempo</h3><p class="muted">${allItems().sort((a,b)=>(b.studyMinutes||0)-(a.studyMinutes||0)).slice(0,3).map(x=>`${esc(x.title)} (${Math.round((x.studyMinutes||0)/60*10)/10}h)`).join("<br>")||"Nessun dato tempo."}</p></div></div>`;renderEvolution()}
+function renderEvolution(){const counts={};allItems().forEach(x=>counts[x.createdAt]=(counts[x.createdAt]||0)+1);const data=Object.entries(counts).sort().slice(-12);const max=Math.max(1,...data.map(x=>x[1]));$("evolutionChart").innerHTML=data.map(([d,n])=>`<div class="barcol" style="height:${Math.max(8,n/max*140)}px"><span>${n}</span></div>`).join("")||'<div class="empty">Nessun dato.</div>'}
+function renderSites(){const q=($("siteSearch").value||"").toLowerCase(),cluster=$("clusterFilter").value||"all",sort=$("sortMode").value;let list=db.sites.filter(s=>(textOf(s).toLowerCase().includes(q))&&(cluster==="all"||classify(s)===cluster));list.sort((a,b)=>sort==="score"?connectionScore(b)-connectionScore(a):sort==="title"?a.title.localeCompare(b.title):String(b.updatedAt||b.createdAt).localeCompare(String(a.updatedAt||a.createdAt)));$("sitesList").innerHTML=list.map(siteCard).join("")||'<div class="empty">Nessun sito.</div>'}
+function siteCard(s){return`<div class="site"><div class="head"><div><h3>${esc(s.title)}</h3><a class="url" href="${esc(s.url)}" target="_blank" data-visit="${s.id}">${esc(s.url)}</a></div><button class="btn small danger" data-delete-site="${s.id}">✕</button></div><p class="muted"><b>Perché:</b> ${esc(s.why)}</p><p class="muted"><b>Contiene:</b> ${esc(s.contains||"")}</p><div class="tags">${(s.tags||[]).map(t=>`<span class="tag ${t===classify(s)?"purple":""}">#${esc(t)}</span>`).join("")}</div><div class="muted" style="margin-top:10px">Cluster: <b>${esc(classify(s))}</b> · Connessioni: ${connectionScore(s)}</div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="btn small secondary" data-focus="${s.id}">Focus AI</button><button class="btn small secondary" data-add-time="${s.id}">+15 min</button><button class="btn small" data-open="${s.id}">Apri</button></div></div>`}
+function renderBooks(){const q=($("bookSearch").value||"").toLowerCase(),status=$("bookStatusFilter").value;let list=db.books.filter(b=>textOf(b).toLowerCase().includes(q)&&(status==="all"||b.status===status));$("booksList").innerHTML=list.map(b=>`<div class="book"><div class="head"><div><h3>${esc(b.title)}</h3><p class="muted">${esc(b.author||"Autore non indicato")} · <b>${esc(b.status)}</b></p></div><button class="btn small danger" data-delete-book="${b.id}">✕</button></div><p class="muted"><b>Perché:</b> ${esc(b.why)}</p><p class="muted"><b>Contiene:</b> ${esc(b.contains||"")}</p><div class="tags">${(b.tags||[]).map(t=>`<span class="tag orange">#${esc(t)}</span>`).join("")}</div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="btn small secondary" data-focus="${b.id}">Focus AI</button><button class="btn small secondary" data-add-time="${b.id}">+15 min</button></div></div>`).join("")||'<div class="empty">Nessun libro.</div>';renderBookSuggestions()}
+function renderBookSuggestions(){const siteTags=new Set(db.sites.flatMap(s=>s.tags||[]));const ideas=[...siteTags].slice(0,8).map(t=>`Libro consigliato su “${t}”`);$("bookSuggestions").innerHTML=ideas.map(x=>`<div class="box" style="margin-bottom:10px"><h3>📖 ${esc(x)}</h3><p class="muted">Suggerito in base ai tag dei siti salvati. Usa AI per ottenere titoli reali.</p></div>`).join("")||'<div class="empty">Aggiungi siti per ricevere suggerimenti.</div>'}
+function renderRelationsSelects(){const opts=allItems().map(x=>`<option value="${x.id}">${x.type==="book"?"📚":"🌐"} ${esc(x.title)}</option>`).join("");$("relFrom").innerHTML=opts;$("relTo").innerHTML=opts;$("pathItemSelect").innerHTML=opts;$("aiTarget").innerHTML=opts;$("mindRoot").innerHTML='<option value="auto">Mappa globale</option>'+opts}
+function addRelation(){const from=$("relFrom").value,to=$("relTo").value;if(from===to){toast("Scegli due elementi diversi");return}db.relations.push({id:uid("r"),from,to,label:$("relLabel").value.trim()||"collegato",why:$("relWhy").value.trim(),createdAt:today()});save();renderAll();toast("Relazione creata")}
+function renderRelations(){$("relationsList").innerHTML=db.relations.map(r=>{const a=itemById(r.from),b=itemById(r.to);return`<div class="box"><h3>${esc(a?.title||"?")} → ${esc(b?.title||"?")}</h3><p class="muted"><b>${esc(r.label)}</b><br>${esc(r.why||"")}</p><button class="btn small danger" data-del-rel="${r.id}">Elimina</button></div>`}).join("")||'<div class="empty">Nessuna relazione manuale.</div>'}
+function addDraftStep(){const id=$("pathItemSelect").value;if(!draftSteps.includes(id))draftSteps.push(id);renderDraftSteps()}
+function renderDraftSteps(){$("draftSteps").innerHTML=draftSteps.map((id,i)=>`<div class="step"><div class="step-num">${i+1}</div><div class="box"><b>${esc(itemById(id)?.title||"?")}</b><br><button class="btn small danger" data-remove-step="${i}">Rimuovi</button></div></div>`).join("")}
+function savePath(){const title=$("pathTitle").value.trim();if(!title||!draftSteps.length){toast("Titolo e almeno uno step");return}db.paths.push({id:uid("p"),title,goal:$("pathGoal").value.trim(),steps:[...draftSteps],createdAt:today()});draftSteps=[];$("pathTitle").value="";$("pathGoal").value="";save();renderAll();toast("Percorso salvato")}
+function renderPaths(){$("pathsList").innerHTML=db.paths.map(p=>`<div class="path-card"><h3>${esc(p.title)}</h3><p class="muted">${esc(p.goal||"")}</p><div class="timeline">${p.steps.map((id,i)=>`<div class="step"><div class="step-num">${i+1}</div><div><b>${esc(itemById(id)?.title||"?")}</b><div class="muted">${esc(classify(itemById(id)||{}))}</div></div></div>`).join("")}</div><button class="btn small danger" data-del-path="${p.id}" style="margin-top:12px">Elimina</button></div>`).join("")||'<div class="empty">Nessun percorso.</div>'}
+function renderSuggestions(){const items=allItems();const top=items.map(item=>({item,sim:items.filter(o=>o.id!==item.id).map(o=>({o,score:similarity(item,o),common:commonTags(item,o)})).filter(x=>x.score>.06||x.common.length).sort((a,b)=>(b.score+b.common.length)-(a.score+a.common.length)).slice(0,2)})).filter(x=>x.sim.length).slice(0,6);$("suggestions").innerHTML=top.map(x=>`<div class="box" style="margin-bottom:10px"><h3>${esc(x.item.title)}</h3>${x.sim.map(s=>`<p class="muted">→ <b>${esc(s.o.title)}</b><br>${s.common.map(t=>"#"+esc(t)).join(", ")||"similarità TF‑IDF locale"}</p>`).join("")}</div>`).join("")||'<div class="empty">Aggiungi più elementi.</div>'}
+function renderClusters(){const g={};allItems().forEach(s=>(g[classify(s)] ||= []).push(s));$("clusters").innerHTML=Object.entries(g).sort((a,b)=>b[1].length-a[1].length).map(([c,arr])=>`<div class="box" style="margin-bottom:10px"><h3>${esc(c)} <span class="muted">(${arr.length})</span></h3><div class="bar"><div class="fill" style="width:${Math.round(arr.length/allItems().length*100)||0}%"></div></div><div class="tags">${[...new Set(arr.flatMap(s=>s.tags||[]))].slice(0,8).map(t=>`<span class="tag green">#${esc(t)}</span>`).join("")}</div></div>`).join("")}
+function renderTFIDF(){const items=allItems();$("tfidfOutput").innerHTML=items.slice(0,8).map(a=>{const best=items.filter(b=>b.id!==a.id).map(b=>({b,score:similarity(a,b)})).sort((x,y)=>y.score-x.score)[0];return`<div class="box" style="margin-bottom:10px"><h3>${esc(a.title)}</h3><p class="muted">Più simile: <b>${esc(best?.b.title||"—")}</b> · score ${(best?.score||0).toFixed(2)}</p></div>`}).join("")}
+async function callAI(action){const target=itemById($("aiTarget").value);$("aiOutput").innerHTML='<div class="box">AI in elaborazione...</div>';try{const res=await fetch("/.netlify/functions/openai-assistant",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action,target,items:allItems(),relations:db.relations,paths:db.paths})});const data=await res.json();if(!res.ok)throw new Error(data.error||"Errore AI");$("aiOutput").innerHTML=`<div class="box"><h3>Risposta AI</h3><p class="muted" style="white-space:pre-wrap">${esc(data.text||JSON.stringify(data,null,2))}</p></div>`}catch(e){$("aiOutput").innerHTML=`<div class="box"><h3>AI non disponibile</h3><p class="muted">${esc(e.message)}<br>Configura OPENAI_API_KEY su Netlify.</p></div>`}}
+function renderAI(){renderRelationsSelects();renderTFIDF()}
+function renderGraph(){const wrap=$("graphWrap"),svg=$("graphSvg"),box=$("graphNodes"),w=wrap.clientWidth||800,h=wrap.clientHeight||560,cx=w/2,cy=h/2,items=allItems().slice(0,34),groups=[...new Set(items.map(classify))];items.forEach((s,i)=>{if(positions[s.id])return;let x,y;if(graphMode==="clusters"){const gi=groups.indexOf(classify(s)),gcx=cx+Math.cos(gi/groups.length*Math.PI*2)*w*.25,gcy=cy+Math.sin(gi/groups.length*Math.PI*2)*h*.25;x=gcx+Math.cos(i*.95)*80;y=gcy+Math.sin(i*.95)*80}else if(graphMode==="random"){x=80+Math.random()*(w-160);y=70+Math.random()*(h-140)}else{const r=Math.max(145,Math.min(w,h)*.37),a=i/Math.max(items.length,1)*Math.PI*2-Math.PI/2;x=cx+Math.cos(a)*r;y=cy+Math.sin(a)*r}positions[s.id]={x,y}});const ed=edges().filter(e=>items.some(s=>s.id===e.a.id)&&items.some(s=>s.id===e.b.id));svg.innerHTML=ed.map(e=>{const a=positions[e.a.id],b=positions[e.b.id],manual=e.kind==="manual";return`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${manual?"rgba(250,204,21,.82)":"rgba(34,211,238,.34)"}" stroke-width="${manual?5:Math.min(4,1+e.weight)}"/>`}).join("");box.innerHTML=items.map(s=>{const p=positions[s.id];return`<div class="node ${s.id===selectedId?"active":""} ${s.type==="book"?"book-node":""}" data-node="${s.id}" style="left:${p.x}px;top:${p.y}px"><strong>${s.type==="book"?"📚":"🌐"} ${esc(s.title)}</strong><span>${esc(classify(s))}</span></div>`}).join("");document.querySelectorAll(".node").forEach(n=>n.addEventListener("pointerdown",startDrag))}
+function startDrag(ev){dragged=ev.currentTarget;const id=dragged.dataset.node,p=positions[id];dragOffset={x:ev.clientX-p.x,y:ev.clientY-p.y};dragged.setPointerCapture(ev.pointerId)}
+function dragMove(ev){if(!dragged)return;const id=dragged.dataset.node,rect=$("graphWrap").getBoundingClientRect();positions[id]={x:ev.clientX-rect.left-dragOffset.x,y:ev.clientY-rect.top-dragOffset.y};renderGraph()}
+function dragEnd(){dragged=null}
+function renderMindMap(){const wrap=$("mindWrap"),svg=$("mindSvg"),box=$("mindNodes"),w=wrap.clientWidth||800,h=wrap.clientHeight||560,cx=w/2,cy=h/2;let center="WebBrain X",children=[];if($("mindRoot").value==="auto"){const g={};allItems().forEach(s=>(g[classify(s)] ||= []).push(s));children=Object.entries(g).sort((a,b)=>b[1].length-a[1].length).slice(0,8).map(([name,arr])=>({name,sub:arr.slice(0,3).map(s=>s.title),size:arr.length}))}else{const item=itemById($("mindRoot").value);if(item){center=item.title;children=(item.tags||[]).slice(0,8).map(t=>({name:"#"+t,sub:allItems().filter(s=>s.id!==item.id&&(s.tags||[]).includes(t)).slice(0,3).map(s=>s.title),size:1}))}}const r=Math.max(145,Math.min(w,h)*.34);let lines="",nodes=`<div class="mind-center"><strong>${esc(center)}</strong><div class="muted">${$("mindRoot").value==="auto"?"mappa globale":"mappa elemento"}</div></div>`;children.forEach((c,i)=>{const a=i/Math.max(children.length,1)*Math.PI*2-Math.PI/2,x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;lines+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(167,139,250,.45)" stroke-width="${Math.min(7,2+c.size)}"/>`;nodes+=`<div class="mind-child" style="left:${x}px;top:${y}px"><strong>${esc(c.name)}</strong><div class="muted">${esc(c.sub.join(" · ").slice(0,70))}</div></div>`});svg.innerHTML=lines;box.innerHTML=nodes}
+function renderExtensionInfo(){$("extensionInfo").innerHTML=`<div class="box"><h3>Come funziona</h3><p class="muted">L'estensione registra URL attivo, titolo e tempo indicativo su pagina. I dati restano nello storage Chrome dell'estensione. Dal popup puoi esportare JSON e importarlo in WebBrain X.</p></div><div class="box" style="margin-top:10px"><h3>Prossimo upgrade</h3><p class="muted">Aggiungere sincronizzazione diretta estensione → PWA tramite endpoint Netlify o backend con database.</p></div>`}
+function exportData(){const blob=new Blob([JSON.stringify({version:"memory-engine",exportedAt:new Date().toISOString(),db},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="webbrainx_memory_backup.json";a.click();URL.revokeObjectURL(a.href);toast("Backup esportato")}
+function importData(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const data=JSON.parse(r.result);db=data.db||data;if(!db.sites||!db.books)throw new Error();save();positions={};renderAll();toast("Dati importati")}catch(e){toast("File non valido")}};r.readAsText(f)}
+function clearAll(){if(!confirm("Svuotare tutto?"))return;db={sites:[],books:[],relations:[],paths:[]};positions={};save();renderAll();toast("Archivio svuotato")}
+function openModal(id){$(id).classList.add("active")}function closeModal(id){$(id).classList.remove("active")}
+function renderAll(){renderKPIs();renderFilters();renderDashboard();renderSites();renderBooks();renderRelationsSelects();renderRelations();renderPaths();renderSuggestions();renderClusters();renderTFIDF();renderBookSuggestions();renderExtensionInfo();if($("panel-graph").classList.contains("active"))renderGraph();if($("panel-mindmap").classList.contains("active"))renderMindMap()}
+function wire(){document.querySelectorAll(".tab,.nav button").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));$("newSiteBtn").onclick=() => openModal("siteModal");$("siteQuickBtn").onclick=() => openModal("siteModal");$("newBookBtn").onclick=() => openModal("bookModal");$("bookQuickBtn").onclick=() => openModal("bookModal");$("sideSaveSite").onclick=()=>{const ok=addSite($("sideUrl").value,$("sideTitle").value,$("sideWhy").value,$("sideContains").value,$("sideTags").value);if(ok)["sideUrl","sideTitle","sideWhy","sideContains","sideTags"].forEach(id=>$(id).value="")};$("mSiteSave").onclick=()=>{const ok=addSite($("mSiteUrl").value,$("mSiteTitle").value,$("mSiteWhy").value,$("mSiteContains").value,$("mSiteTags").value);if(ok){["mSiteUrl","mSiteTitle","mSiteWhy","mSiteContains","mSiteTags"].forEach(id=>$(id).value="");closeModal("siteModal")}};$("mBookSave").onclick=()=>{const ok=addBook($("mBookTitle").value,$("mBookAuthor").value,$("mBookStatus").value,$("mBookWhy").value,$("mBookContains").value,$("mBookTags").value);if(ok){["mBookTitle","mBookAuthor","mBookWhy","mBookContains","mBookTags"].forEach(id=>$(id).value="");closeModal("bookModal")}};document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>closeModal(b.dataset.close));document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)closeModal(m.id)}));$("exportBtn").onclick=exportData;$("importBtn").onclick=()=>$("importFile").click();$("importFile").onchange=importData;$("clearBtn").onclick=clearAll;$("clusterFilter").onchange=renderAll;$("siteSearch").oninput=renderSites;$("sortMode").onchange=renderSites;$("bookSearch").oninput=renderBooks;$("bookStatusFilter").onchange=renderBooks;$("addRelationBtn").onclick=addRelation;$("addPathStepBtn").onclick=addDraftStep;$("savePathBtn").onclick=savePath;$("aiSummarizeBtn").onclick=()=>callAI("summarize_and_link");$("aiClusterBtn").onclick=()=>callAI("cluster");$("circleBtn").onclick=()=>{graphMode="circle";positions={};renderGraph()};$("clusterBtn").onclick=()=>{graphMode="clusters";positions={};renderGraph()};$("randomBtn").onclick=()=>{graphMode="random";positions={};renderGraph()};$("mindBtn").onclick=renderMindMap;$("mindRoot").onchange=renderMindMap;document.addEventListener("click",e=>{const ds=e.target.closest("[data-delete-site]");if(ds&&confirm("Eliminare sito?")){db.sites=db.sites.filter(s=>s.id!==ds.dataset.deleteSite);save();renderAll()}const dbk=e.target.closest("[data-delete-book]");if(dbk&&confirm("Eliminare libro?")){db.books=db.books.filter(s=>s.id!==dbk.dataset.deleteBook);save();renderAll()}const rel=e.target.closest("[data-del-rel]");if(rel){db.relations=db.relations.filter(r=>r.id!==rel.dataset.delRel);save();renderAll()}const path=e.target.closest("[data-del-path]");if(path){db.paths=db.paths.filter(p=>p.id!==path.dataset.delPath);save();renderAll()}const rem=e.target.closest("[data-remove-step]");if(rem){draftSteps.splice(Number(rem.dataset.removeStep),1);renderDraftSteps()}const focus=e.target.closest("[data-focus]");if(focus){selectedId=focus.dataset.focus;showTab("ai");$("aiTarget").value=selectedId}const addt=e.target.closest("[data-add-time]");if(addt){const it=itemById(addt.dataset.addTime);if(it){it.studyMinutes=(it.studyMinutes||0)+15;save();renderAll();toast("+15 minuti aggiunti")}}const open=e.target.closest("[data-open]");if(open){const it=itemById(open.dataset.open);if(it&&it.url){it.visits=(it.visits||0)+1;save();window.open(it.url,"_blank","noopener,noreferrer");renderAll()}}});document.addEventListener("pointermove",dragMove);document.addEventListener("pointerup",dragEnd);document.addEventListener("pointercancel",dragEnd);document.addEventListener("paste",e=>{const text=(e.clipboardData||window.clipboardData).getData("text");if(/^https?:\/\//.test(text.trim())&&!["INPUT","TEXTAREA"].includes(document.activeElement.tagName)){openModal("siteModal");$("mSiteUrl").value=text.trim();$("mSiteTitle").value=domainOf(text.trim());toast("URL rilevato: completa il perché")}});window.addEventListener("resize",()=>{if($("panel-graph").classList.contains("active"))renderGraph();if($("panel-mindmap").classList.contains("active"))renderMindMap()});window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;$("installBtn").style.display="inline-flex"});$("installBtn").onclick=async()=>{if(!deferredPrompt){toast("Usa menu Chrome → Installa app");return}deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$("installBtn").style.display="none"}}
+if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(console.log));
+try{wire();renderAll()}catch(err){console.error(err);alert("Errore iniziale WebBrain X: "+err.message)}
+</script>
+</body>
+</html>
